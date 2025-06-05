@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Represents a user or participant in the platform.
+model Entity {
+    id Int @id
+    first_name String?
+    last_name String?
+    mobile String @unique
+    password String?
+    email String?
+
+    learning_paths LearningPathEntity[] @relation("LearningPathToEntity")
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    @@map("entities")
+}
+
+
+
+
+/// Represents a learning path that can be associated with different targetable entities.
+model LearningPath {
+    id Int @id
+    title String
+    description String?
+    targetable_type LearningPathTargetable
+    targetable_id Int
+
+    onlineSession OnlineSession? @relation("OnlineSessionToLearningPath", fields: [targetable_id], references: [id], map: "learning_paths_online_session_fkey")
+    placement Placement? @relation("PlacementToLearningPath", fields: [targetable_id], references: [id], map: "learning_paths_placement_fkey")
+    practice Practice? @relation("PracticeToLearningPath", fields: [targetable_id], references: [id], map: "learning_paths_practice_fkey")
+    log Log? @relation("LogToLearningPath", fields: [targetable_id], references: [id], map: "learning_paths_log_fkey")
+    assessment Assessment? @relation("AssessmentToLearningPath", fields: [targetable_id], references: [id], map: "learning_paths_assessment_fkey")
+
+    entities LearningPathEntity[] @relation("LearningPathToLearningPathEntity")
+
+
+    date DateTime @default(now())
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    @@map("learning_paths")
+}
+
+/// Represents the relationship between an entity and a learning path.
+model LearningPathEntity {
+    entity_id Int
+    learning_path_id Int
+    role LearningPathEntityRole
+
+    entity Entity @relation("LearningPathToEntity", fields: [entity_id], references: [id], map: "learning_paths_entity_fkey")
+    learning_path LearningPath @relation("LearningPathToLearningPathEntity", fields: [learning_path_id], references: [id], map: "learning_paths_learning_path_fkey")
+
+    @@unique([entity_id, learning_path_id])
+}
+
+/// Represents the role of an entity in a learning path.
+enum LearningPathEntityRole {
+    TEACHER
+    STUDENT
+}
+
+
+/// Represents the type of entity a learning path can target.
+enum LearningPathTargetable {
+    ONLINE_SESSION
+    PLACEMENT
+    PRACTICE
+    LOG
+    ASSESSMENT
+}
+
+/// Represents an assessment within a learning path.
+model Assessment {
+    id Int @id @default(autoincrement())
+    learningPaths LearningPath[] @relation("AssessmentToLearningPath")
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("assessments")
+}
+
+/// Represents an online session within a learning path.
+model OnlineSession {
+    id Int @id @default(autoincrement())
+    learningPaths LearningPath[] @relation("OnlineSessionToLearningPath")
+
+
+    start_time DateTime
+    end_time DateTime
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("online_sessions")
+}
+
+/// Represents a placement test within a learning path.
+model Placement {
+    id Int @id @default(autoincrement())
+    learningPaths LearningPath[] @relation("PlacementToLearningPath")
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("placements")
+}
+
+/// Represents a practice exercise within a learning path.
+model Practice {
+    id Int @id @default(autoincrement())
+    learningPaths LearningPath[] @relation("PracticeToLearningPath")
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("practices")
+}
+
+/// Represents a log entry within a learning path.
+model Log {
+    id Int @id @default(autoincrement())
+    learningPaths LearningPath[] @relation("LogToLearningPath")
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("logs")
+}
+
+
+model Level {
+    id Int @id
+
+    name String
+    description String?
+
+
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("levels")
+}
+
+/// Represents an OTP for two-factor authentication.
+model Otp {
+    id Int @id @default(autoincrement())
+    mobile String
+    code String
+    expires_at DateTime
+   
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("otps")
+}
