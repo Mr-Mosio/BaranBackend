@@ -61,7 +61,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"mobile\": \"+989123456789\",\n  \"code\": \"123456\",\n  \"password\": \"StrongPassword123\",\n }"
+          "raw": "{\n  \"mobile\": \"+989123456789\",\n  \"code\": \"123456\",\n  \"password\": \"StrongPassword123\",\n  \"role_id\": 1\n}"
         },
         "url": {
           "raw": "{{base_url}}/auth/verify",
@@ -73,7 +73,7 @@
             "verify"
           ]
         },
-        "description": "Verify OTP or password for login/registration. Returns JWT token and user data."
+        "description": "Verify OTP or password for login/registration. Returns JWT token and user data. If multiple roles exist, returns a list of roles. If a role_id is provided, logs in with that specific role."
       },
       "event": [
         {
@@ -92,11 +92,18 @@
       ],
       "response": [
         {
-          "name": "Success",
+          "name": "Success - Single Role Login",
           "originalRequest": {},
           "status": "OK",
           "code": 200,
           "body": "{\n  \"token\": \"<jwt_token>\",\n  \"user\": {\n    \"id\": 1,\n    \"mobile\": \"+989123456789\"\n  }\n}"
+        },
+        {
+          "name": "Success - Multiple Roles Found",
+          "originalRequest": {},
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"user\": {\n    \"id\": 1,\n    \"mobile\": \"+989123456789\"\n  },\n  \"roles\": [\n    { \"id\": 1, \"name\": \"Student\" },\n    { \"id\": 2, \"name\": \"Teacher\" }\n  ]\n}"
         },
         {
           "name": "Invalid Input",
@@ -111,6 +118,73 @@
           "status": "Unauthorized",
           "code": 401,
           "body": "{\n  \"error\": \"Unauthorized (e.g., invalid OTP or password).\"\n}"
+        },
+        {
+          "name": "No Access / No Roles",
+          "originalRequest": {},
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"You don't have access. No roles assigned to you.\"\n}"
+        },
+        {
+          "name": "Invalid Role ID",
+          "originalRequest": {},
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Invalid role ID.\"\n}"
+        },
+        {
+          "name": "Role ID Required for Multiple Roles",
+          "originalRequest": {},
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Role ID is required for login with multiple roles.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/me",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "me"
+          ]
+        },
+        "description": "Get the authenticated user's profile."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {},
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"id\": 1,\n  \"mobile\": \"+989123456789\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john.doe@example.com\"\n}"
+        },
+        {
+          "name": "Unauthorized",
+          "originalRequest": {},
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Unauthorized.\"\n}"
+        },
+        {
+          "name": "Not Found",
+          "originalRequest": {},
+          "status": "Not Found",
+          "code": 404,
+          "body": "{\n  \"error\": \"User not found.\"\n}"
         }
       ]
     }

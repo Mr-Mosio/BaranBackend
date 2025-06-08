@@ -31,6 +31,9 @@ export const verifyValidator = validator(
   body('password')
     .optional()
     .isLength({ min: 6 }).withMessage(i18n.t('auth.password_length')),
+  body('role_id')
+    .optional()
+    .isInt({ gt: 0 }).withMessage(i18n.t('auth.role_id_invalid')),
   body().custom((value, { req }) => {
     const { code, password } = req.body;
     if (!code && !password) {

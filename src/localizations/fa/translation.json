@@ -17,7 +17,13 @@
     "otp_numeric": "کد یکبار مصرف باید عددی باشد.",
     "otp_length": "کد یکبار مصرف باید بین ۴ تا ۶ رقم باشد.",
     "password_length": "رمز عبور باید حداقل ۶ کاراکتر باشد.",
-    "cannot_provide_both_otp_and_password": "نمی‌توان هم کد یکبار مصرف و هم رمز عبور را وارد کرد."
+    "cannot_provide_both_otp_and_password": "نمی‌توان هم کد یکبار مصرف و هم رمز عبور را وارد کرد.",
+    "no_access_no_roles": "شما دسترسی ندارید. هیچ نقشی به شما اختصاص داده نشده است.",
+    "invalid_role_id": "شناسه نقش نامعتبر است.",
+    "role_id_required_for_multiple_roles": "برای ورود با چندین نقش، شناسه نقش الزامی است.",
+    "multiple_roles_found": "چندین نقش برای شما یافت شد. لطفاً شناسه نقش مورد نظر را ارسال کنید.",
+    "user_profile_retrieved": "اطلاعات کاربری با موفقیت دریافت شد.",
+    "user_not_found": "کاربر یافت نشد."
   },
   "error": {
     "unauthorized": "دسترسی غیرمجاز.",

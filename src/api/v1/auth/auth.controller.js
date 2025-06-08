@@ -27,17 +27,36 @@ const checkMobile = async (req, res) => {
  * @param {object} res - Express response object.
  */
 const verify = async (req, res) => {
-  const { mobile, password, code } = req.body;
+  const { mobile, password, code, role_id } = req.body;
 
   try {
-    const result = await authService.verify(mobile, password, code);
-    res.success(i18n.t('auth.verification_successful'), result);
+    const result = await authService.verify(mobile, password, code, role_id);
+    if (result.roles) {
+      res.success(i18n.t('auth.multiple_roles_found'), result);
+    } else {
+      res.success(i18n.t('auth.verification_successful'), result);
+    }
   } catch (error) {
     res.failed(error.message, error, 401);
+  }
+};
+
+/**
+ * Controller to get the authenticated user's profile.
+ * @param {object} req - Express request object.
+ * @param {object} res - Express response object.
+ */
+const me = async (req, res) => {
+  try {
+    const user = await authService.getAuthenticatedUser(req.user.id);
+    res.success(i18n.t('auth.user_profile_retrieved'), user);
+  } catch (error) {
+    res.failed(error.message, error, 404);
   }
 };
 
 export default {
   checkMobile,
   verify,
+  me,
 };

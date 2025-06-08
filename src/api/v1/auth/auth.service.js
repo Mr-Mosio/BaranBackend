@@ -108,7 +108,7 @@ const checkMobile = async (mobile, force_otp = false) => {
  * @returns {Promise<{ token: string, user: object }>} - The generated JWT token and user data.
  * @throws {Error} - If verification fails.
  */
-const verify = async (mobile, password, code) => {
+const verify = async (mobile, password, code, role_id) => {
   let entity;
 
   if (password) {
@@ -138,10 +138,6 @@ const verify = async (mobile, password, code) => {
       throw new Error(i18n.t('auth.invalid_or_expired_otp'));
     }
 
-    await prisma.otp.delete({
-      where: { id: otp.id },
-    });
-
     entity = await prisma.entity.findUnique({
       where: { mobile },
     });
@@ -161,9 +157,67 @@ const verify = async (mobile, password, code) => {
     throw new Error(i18n.t('auth.user_not_found_after_verification'));
   }
 
-  const token = jwtService.generateToken({ id: entity.id, mobile: entity.mobile });
+  const userRoles = await prisma.entityRole.findMany({
+    where: { entity_id: entity.id },
+    include: {
+      role: true,
+    },
+  });
+
+  if (userRoles.length === 0) {
+    throw new Error(i18n.t('auth.no_access_no_roles'));
+  }
+
+  if (userRoles.length > 1 && !role_id) {
+    return {
+      user: entity,
+      roles: userRoles.map(er => ({ id: er.role.id, name: er.role.name })),
+    };
+  }
+
+  let selectedRoleId = role_id;
+  if (userRoles.length === 1) {
+    selectedRoleId = userRoles[0].role.id;
+  }
+
+  if (selectedRoleId) {
+    const roleExists = userRoles.some(er => er.role.id === selectedRoleId);
+    if (!roleExists) {
+      throw new Error(i18n.t('auth.invalid_role_id'));
+    }
+  } else {
+    throw new Error(i18n.t('auth.role_id_required_for_multiple_roles'));
+  }
+
+  const token = jwtService.generateToken({ id: entity.id, mobile: entity.mobile, role_id: selectedRoleId });
 
   return { token, user: entity };
+};
+
+/**
+ * Retrieves the authenticated user's profile by ID.
+ * @param {number} userId - The ID of the authenticated user.
+ * @returns {Promise<object>} - The user object.
+ * @throws {Error} - If the user is not found.
+ */
+const getAuthenticatedUser = async (userId) => {
+  const user = await prisma.entity.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      mobile: true,
+      first_name: true,
+      last_name: true,
+      email: true,
+      // Add other fields you want to expose for the user profile
+    },
+  });
+
+  if (!user) {
+    throw new Error(i18n.t('auth.user_not_found'));
+  }
+
+  return user;
 };
 
 export default {
@@ -172,4 +226,5 @@ export default {
   generateAndSaveOtp,
   hashPassword,
   comparePassword,
+  getAuthenticatedUser,
 };

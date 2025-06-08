@@ -5,6 +5,7 @@ import config from '../config/index.js'; // Assuming config file exists for JWT 
  * @typedef {object} TokenPayload
  * @property {number} id - The entity ID.
  * @property {string} mobile - The entity's mobile number.
+ * @property {number} [role_id] - The selected role ID (optional).
  */
 
 /**
