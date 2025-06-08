@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import authMiddleware from './middlewares/auth.middleware.js';
 import authRoutes from './api/v1/auth/auth.routes.js';
 import responseMiddleware from './middlewares/response.middleware.js';
+import i18nMiddleware from './middlewares/i18n.middleware.js';
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use(express.json());
 
 // Standardize API responses
 app.use(responseMiddleware);
+
+app.use(i18nMiddleware);
 
 // Basic route for testing
 app.get('/', (req, res) => {

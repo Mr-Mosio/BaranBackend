@@ -9,7 +9,7 @@ datasource db {
 
 /// Represents a user or participant in the platform.
 model Entity {
-    id Int @id
+    id Int @id @default(autoincrement())
     first_name String?
     last_name String?
     mobile String @unique
@@ -28,7 +28,7 @@ model Entity {
 
 /// Represents a learning path that can be associated with different targetable entities.
 model LearningPath {
-    id Int @id
+    id Int @id @default(autoincrement())
     title String
     description String?
     targetable_type LearningPathTargetable
@@ -138,7 +138,7 @@ model Log {
 
 
 model Level {
-    id Int @id
+    id Int @id @default(autoincrement())
 
     name String
     description String?

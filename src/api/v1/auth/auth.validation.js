@@ -1,5 +1,6 @@
 import { body } from 'express-validator';
-import { validator, validateMobile, validatePassword } from '~/utils/validator';
+import { validator, validateMobile } from '../../../utils/validator.js';
+import i18n from '../../../utils/i18n.js';
 
 /**
  * Validators for the /auth/check-mobile route.
@@ -7,11 +8,11 @@ import { validator, validateMobile, validatePassword } from '~/utils/validator';
  */
 export const checkMobileValidator = validator(
   body('mobile')
-    .notEmpty().withMessage('Mobile number is required.')
+    .notEmpty().withMessage(i18n.t('auth.mobile_required'))
     .custom(validateMobile),
   body('force_otp')
     .optional()
-    .isBoolean().withMessage('Force OTP must be a boolean.')
+    .isBoolean().withMessage(i18n.t('auth.force_otp_boolean'))
     .toBoolean()
 );
 
@@ -21,22 +22,22 @@ export const checkMobileValidator = validator(
  */
 export const verifyValidator = validator(
   body('mobile')
-    .notEmpty().withMessage('Mobile number is required.')
+    .notEmpty().withMessage(i18n.t('auth.mobile_required'))
     .custom(validateMobile),
-  body('otp')
+  body('code')
     .optional()
-    .isNumeric().withMessage('OTP must be numeric.')
-    .isLength({ min: 4, max: 6 }).withMessage('OTP must be between 4 and 6 digits.'),
+    .isNumeric().withMessage(i18n.t('auth.otp_numeric'))
+    .isLength({ min: 4, max: 6 }).withMessage(i18n.t('auth.otp_length')),
   body('password')
     .optional()
-    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long.'),
+    .isLength({ min: 6 }).withMessage(i18n.t('auth.password_length')),
   body().custom((value, { req }) => {
-    const { otp, password } = req.body;
-    if (!otp && !password) {
-      throw new Error('Either OTP or password is required.');
+    const { code, password } = req.body;
+    if (!code && !password) {
+      throw new Error(i18n.t('auth.otp_or_password_required'));
     }
-    if (otp && password) {
-      throw new Error('Cannot provide both OTP and password.');
+    if (code && password) {
+      throw new Error(i18n.t('auth.cannot_provide_both_otp_and_password'));
     }
     return true;
   })

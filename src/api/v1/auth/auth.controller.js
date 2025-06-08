@@ -1,4 +1,5 @@
-import authService from './auth.service';
+import authService from './auth.service.js';
+import i18n from '../../../utils/i18n.js';
 
 /**
  * Controller for the first step of authentication (check mobile and password).
@@ -11,9 +12,9 @@ const checkMobile = async (req, res) => {
   try {
     const result = await authService.checkMobile(mobile, force_otp);
     if (result.otp_sent) {
-      res.success('OTP sent successfully.', { has_password: result.has_password, otp_sent: true });
+      res.success(i18n.t('auth.otp_sent'), { has_password: result.has_password, otp_sent: true });
     } else {
-      res.success('Mobile number checked successfully.', { has_password: result.has_password, otp_sent: false });
+      res.success(i18n.t('auth.mobile_checked'), { has_password: result.has_password, otp_sent: false });
     }
   } catch (error) {
     res.failed(error.message, error, 400);
@@ -30,7 +31,7 @@ const verify = async (req, res) => {
 
   try {
     const result = await authService.verify(mobile, password, code);
-    res.success('Verification successful', result);
+    res.success(i18n.t('auth.verification_successful'), result);
   } catch (error) {
     res.failed(error.message, error, 401);
   }

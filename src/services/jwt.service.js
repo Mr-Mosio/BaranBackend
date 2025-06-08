@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../config'; // Assuming config file exists for JWT secret
+import config from '../config/index.js'; // Assuming config file exists for JWT secret
 
 /**
  * @typedef {object} TokenPayload
@@ -15,7 +15,7 @@ import config from '../config'; // Assuming config file exists for JWT secret
  */
 const generateToken = (payload, expiresIn = '1h') => {
   // TODO: Ensure JWT_SECRET is properly configured in environment variables
-  return jwt.sign(payload, config.jwt.secret, { expiresIn });
+  return jwt.sign(payload, config.jwtSecret, { expiresIn });
 };
 
 /**
@@ -26,7 +26,7 @@ const generateToken = (payload, expiresIn = '1h') => {
 const verifyToken = (token) => {
   try {
     // TODO: Ensure JWT_SECRET is properly configured in environment variables
-    return jwt.verify(token, config.jwt.secret);
+    return jwt.verify(token, config.jwtSecret);
   } catch (error) {
     return null;
   }

@@ -1,7 +1,6 @@
-import { validationResult, body, buildCheckFunction, matchedData, query } from 'express-validator';
+import { validationResult, buildCheckFunction, matchedData, query } from 'express-validator';
 import path from 'path';
 import { promises as fs } from 'fs';
-import { failedResponse } from '../middlewares/response.middleware'; // Assuming this path
 
 /**
  * Validates a mobile number for Iranian format.
@@ -136,7 +135,7 @@ export function filter(excel = null, ...args) {
     (req, res, next) => {
       const validate = validationResult(req);
       if (!validate.isEmpty()) {
-        return res.status(400).json(failedResponse(validate));
+        return res.failed('text error', validate, 400);
       }
       const { _excel, ...filters } = matchedData(req);
       if (_excel) {

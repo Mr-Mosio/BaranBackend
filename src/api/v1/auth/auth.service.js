@@ -1,7 +1,8 @@
-import prisma from '../../../services/prisma.service';
-import jwtService from '../../../services/jwt.service';
-import config from '../../../config';
+import prisma from '../../../services/prisma.service.js';
+import jwtService from '../../../services/jwt.service.js';
+import config from '../../../config/index.js';
 import bcrypt from 'bcrypt';
+import i18n from '../../../utils/i18n.js';
 
 /**
  * Hashes a plain text password.
@@ -116,11 +117,11 @@ const verify = async (mobile, password, code) => {
     });
 
     if (!entity || !entity.password) {
-      throw new Error('Invalid credentials');
+      throw new Error(i18n.t('auth.invalid_credentials'));
     }
     const isPasswordValid = await comparePassword(password, entity.password);
     if (!isPasswordValid) {
-      throw new Error('Invalid credentials');
+      throw new Error(i18n.t('auth.invalid_credentials'));
     }
   } else if (code) {
     const otp = await prisma.otp.findFirst({
@@ -134,7 +135,7 @@ const verify = async (mobile, password, code) => {
     });
 
     if (!otp) {
-      throw new Error('Invalid or expired OTP');
+      throw new Error(i18n.t('auth.invalid_or_expired_otp'));
     }
 
     await prisma.otp.delete({
@@ -153,11 +154,11 @@ const verify = async (mobile, password, code) => {
       });
     }
   } else {
-    throw new Error('Either password or OTP code is required for verification.');
+    throw new Error(i18n.t('auth.password_or_otp_required'));
   }
 
   if (!entity) {
-    throw new Error('User not found after verification.');
+    throw new Error(i18n.t('auth.user_not_found_after_verification'));
   }
 
   const token = jwtService.generateToken({ id: entity.id, mobile: entity.mobile });

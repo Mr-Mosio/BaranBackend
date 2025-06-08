@@ -1,0 +1,124 @@
+{
+  "info": {
+    "name": "English Learning Platform API - Auth",
+    "description": "Postman collection for authentication endpoints of the English Learning Platform (Node.js/Express, JWT-based).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "b1e1b1e1-1234-5678-9abc-def012345678"
+  },
+  "item": [
+    {
+      "name": "Check Mobile",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mobile\": \"+989123456789\",\n  \"force_otp\": false\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/check-mobile",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "check-mobile"
+          ]
+        },
+        "description": "Check if a mobile number exists and optionally send OTP."
+      },
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {},
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"has_password\": true,\n  \"otp_sent\": false\n}"
+        },
+        {
+          "name": "Invalid Input",
+          "originalRequest": {},
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"error\": \"Invalid input.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Verify",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"mobile\": \"+989123456789\",\n  \"code\": \"123456\",\n  \"password\": \"StrongPassword123\",\n }"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/verify",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "verify"
+          ]
+        },
+        "description": "Verify OTP or password for login/registration. Returns JWT token and user data."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (pm.response.code === 200 && jsonData.token) {",
+              "    pm.environment.set(\"token\", jsonData.token);",
+              "    console.log(\"JWT Token stored: \" + jsonData.token);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "Success",
+          "originalRequest": {},
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"token\": \"<jwt_token>\",\n  \"user\": {\n    \"id\": 1,\n    \"mobile\": \"+989123456789\"\n  }\n}"
+        },
+        {
+          "name": "Invalid Input",
+          "originalRequest": {},
+          "status": "Bad Request",
+          "code": 400,
+          "body": "{\n  \"error\": \"Invalid input or verification failed.\"\n}"
+        },
+        {
+          "name": "Unauthorized",
+          "originalRequest": {},
+          "status": "Unauthorized",
+          "code": 401,
+          "body": "{\n  \"error\": \"Unauthorized (e.g., invalid OTP or password).\"\n}"
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000/api/v1"
+    }
+  ]
+}
