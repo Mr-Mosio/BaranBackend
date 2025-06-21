@@ -48,8 +48,7 @@ const verify = async (req, res) => {
  */
 const me = async (req, res) => {
   try {
-    const user = await authService.getAuthenticatedUser(req.user.id);
-    res.success(i18n.t('auth.user_profile_retrieved'), user);
+    res.success(i18n.t('auth.user_profile_retrieved'), req.entity);
   } catch (error) {
     res.failed(error.message, error, 404);
   }

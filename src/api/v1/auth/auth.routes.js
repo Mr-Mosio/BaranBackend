@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.post('/check-mobile', checkMobileValidator, authController.checkMobile);
 router.post('/verify', verifyValidator, authController.verify);
-router.get('/me', authMiddleware, authController.me);
+router.get('/me', authMiddleware.authenticate, authController.me);
 
 export default router;

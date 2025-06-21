@@ -217,7 +217,27 @@ const getAuthenticatedUser = async (userId) => {
     throw new Error(i18n.t('auth.user_not_found'));
   }
 
-  return user;
+  // Format roles as array of role names
+  const roles = user.roles.map(er => er.role.name);
+
+  // Format permissions as object with permission names as keys
+  const permissions = {};
+  user.roles.forEach(er => {
+    er.role.permissions.forEach(rp => {
+      permissions[rp.permission.name] = true;
+    });
+  });
+
+  // Return user profile with roles and permissions
+  return {
+    id: user.id,
+    mobile: user.mobile,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    roles,
+    permissions
+  };
 };
 
 export default {

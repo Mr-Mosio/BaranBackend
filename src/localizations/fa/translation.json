@@ -23,7 +23,11 @@
     "role_id_required_for_multiple_roles": "برای ورود با چندین نقش، شناسه نقش الزامی است.",
     "multiple_roles_found": "چندین نقش برای شما یافت شد. لطفاً شناسه نقش مورد نظر را ارسال کنید.",
     "user_profile_retrieved": "اطلاعات کاربری با موفقیت دریافت شد.",
-    "user_not_found": "کاربر یافت نشد."
+    "user_not_found": "کاربر یافت نشد.",
+    "noToken": "توکن احراز هویت ارسال نشده است.",
+    "invalidToken": "توکن احراز هویت نامعتبر است.",
+    "entityNotFound": "کاربر یافت نشد.",
+    "unauthorized": "دسترسی غیرمجاز."
   },
   "error": {
     "unauthorized": "دسترسی غیرمجاز.",
